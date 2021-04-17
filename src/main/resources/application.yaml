@@ -1,0 +1,7 @@
+name: grapefruit
+address: GD.SZ
+game: StrarCraft2
+
+server:
+  port: 8080
+

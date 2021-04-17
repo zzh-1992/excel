@@ -1,0 +1,58 @@
+name: grapefruit2021
+address: GD.MZ
+game: StrarCraft2
+
+languages:
+  - Ruby
+  - Perl
+  - Python
+websites:
+  YAML: yaml.org
+  Ruby: ruby-lang.org
+  Python: python.org
+  Perl: use.perl.org
+
+data: |
+  There once was a short man from Ealing
+  Who got on a bus to Darjeeling
+      It said on the door
+      "Please don't spit on the floor"
+  So he carefully spat on the ceiling
+
+
+senquence: >
+  Wrapped text
+  will be folded
+  into a single
+  paragraph
+
+  Blank lines denote
+  paragraph breaks
+
+
+multiLineString3: "line1 hello world\
+line2 yaml demo\
+line3 welcome"
+
+string1: |
+  I am a coder.
+  My blog is didispace.com.
+
+string2: |+
+  I am a coder.
+  My blog is didispace.com.
+
+string3: |-
+  I am a coder.
+  My blog is didispace.com.
+
+
+string: 'I am a coder.
+         My blog is didispace.com.'
+
+
+
+
+
+
+
