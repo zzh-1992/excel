@@ -42,10 +42,11 @@ public class Excel implements ApplicationContextAware {
     public static void main(String[] args) throws IOException {
         XSSFWorkbook workbook = new XSSFWorkbook();
 
-        XSSFSheet sheet = workbook.createSheet("柚子苦瓜茶");
+        XSSFSheet sheet = workbook.createSheet("柚子苦瓜茶-2021-04-18");
 
-        String fileName = "/Users/zhihuangzhang/IdeaProjects/excel/src/main/java/com/grapefruit/excel/file/properties.yaml";
-        HashMap map = YamlTools.getSource(fileName);
+        //String fileName = "/Users/zhihuangzhang/IdeaProjects/excel/src/main/java/com/grapefruit/excel/file/properties.yaml";
+        //HashMap map = YamlTools.getSource(fileName);
+        HashMap map = YamlTools.getFile();
         // 行
         int r = map.size();
         // 列
@@ -59,7 +60,7 @@ public class Excel implements ApplicationContextAware {
             createCell(row,c,list.get(i));
         }
 
-        OutputStream os = new FileOutputStream("/Users/zhihuangzhang/Desktop/excel.xls");
+        OutputStream os = new FileOutputStream("/Users/zhihuangzhang/Desktop/excel.xlsx");
         workbook.write(os);
         os.flush();
         os.close();

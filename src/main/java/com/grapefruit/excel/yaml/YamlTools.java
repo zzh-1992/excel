@@ -30,7 +30,7 @@ public class YamlTools implements ApplicationContextAware {
         getFile();
     }
 
-    public static void getFile(){
+    public static HashMap getFile(){
         File baseFile = new File("/Users/zhihuangzhang/IdeaProjects/excel/src/main/java/com/grapefruit/excel/file");
         File[] files = baseFile.listFiles();
         HashMap keyValue = new HashMap<>();
@@ -40,6 +40,8 @@ public class YamlTools implements ApplicationContextAware {
             }
         }
         System.out.println(keyValue.size());
+
+        return keyValue;
     }
 
     public static HashMap  getSource(String fileName) {
