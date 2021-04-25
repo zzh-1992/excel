@@ -1,6 +1,7 @@
 package com.grapefruit.excel;
 
 import com.grapefruit.excel.yaml.YamlTools;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,6 +45,8 @@ public class Excel implements ApplicationContextAware {
         XSSFWorkbook workbook = new XSSFWorkbook();
 
         XSSFSheet sheet = workbook.createSheet("柚子苦瓜茶-2021-04-18");
+
+        List<CellRangeAddress> mergedRegions = sheet.getMergedRegions();
 
         //String fileName = "/Users/zhihuangzhang/IdeaProjects/excel/src/main/java/com/grapefruit/excel/file/properties.yaml";
         //HashMap map = YamlTools.getSource(fileName);
