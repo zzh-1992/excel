@@ -4,11 +4,10 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.HashMap;
 
 /**
@@ -26,8 +25,28 @@ public class YamlTools implements ApplicationContextAware {
         //getSource();
     }
 
-    public static void main(String[] args) {
-        getFile();
+    public static void main(String[] args) throws IOException {
+        // 获取yaml数据
+        //getFile();
+
+        // 把数据写入yaml
+        dataToYaml();
+    }
+    public static void dataToYaml() throws IOException {
+        DumperOptions options = new DumperOptions();
+        // 保证yaml写入后是层级-块状结构
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+
+        Yaml yaml = new Yaml(options);
+
+        // 原文件
+        String sourcePath = "C:\\Users\\zhangzhihuang\\Desktop\\application.yml";
+
+        // 输出路径
+        String path = "C:\\Users\\zhangzhihuang\\Desktop\\a.yml";
+
+        // 输出
+        yaml.dump(getSource(sourcePath),new FileWriter(path));
     }
 
     public static HashMap getFile(){
@@ -40,7 +59,6 @@ public class YamlTools implements ApplicationContextAware {
             }
         }
         System.out.println(keyValue.size());
-
         return keyValue;
     }
 
