@@ -1,0 +1,8 @@
+
+
+
+linux相关命令(linux_command)
+1.远程复制文件
+    "root@172.16.163.4:/opt/myJava.tar.gz" ==>源文件路径
+    /usr 将文件拷贝在本机的该路径下
+    命令: scp root@172.16.163.4:/opt/myJava.tar.gz /usr
