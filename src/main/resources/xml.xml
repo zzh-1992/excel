@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+
+    <bean id="2020" part="a">
+        <meta name="secret">key1999</meta>
+        <meta name="iv">mac202105</meta>
+    </bean>
+
+    <bean id="2020" part="b">
+        <meta name="secret">key2008</meta>
+        <meta name="iv">mac2008</meta>
+    </bean>
+
+    <bean id="2021" part="c">
+        <meta name="secret">key2021</meta>
+        <meta name="iv">mac2021</meta>
+    </bean>
+
+</beans>

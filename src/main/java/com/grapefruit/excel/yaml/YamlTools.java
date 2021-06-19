@@ -7,10 +7,16 @@ import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -20,13 +26,7 @@ import java.util.Objects;
  */
 @Component
 public class YamlTools implements ApplicationContextAware {
-    private ApplicationContext context;
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        context = applicationContext;
-        //getSource();
-    }
+    ApplicationContext context;
 
     public static void main(String[] args) throws IOException {
         // 获取yaml数据
@@ -35,6 +35,7 @@ public class YamlTools implements ApplicationContextAware {
         // 把数据写入yaml
         dataToYaml();
     }
+
     public static void dataToYaml() throws IOException {
         DumperOptions options = new DumperOptions();
         // 保证yaml写入后是层级-块状结构
@@ -48,8 +49,27 @@ public class YamlTools implements ApplicationContextAware {
         // 输出路径
         String path = "/Users/zhihuangzhang/IdeaProjects/excel/src/main/java/com/grapefruit/excel/yaml/output.yaml";
 
+        // 获取原始数据
+        HashMap<String, Object> sourceFromYaml = getSourceFromYaml(sourcePath);
+
+        // 将属性值转换为小写
+        toLowerCase(sourceFromYaml);
+
         // 输出
-        yaml.dump(getSourceFromYaml(sourcePath),new FileWriter(path));
+        yaml.dump(sourceFromYaml, new FileWriter(path));
+    }
+
+    // 将value转换为小写
+    private static void toLowerCase(Map<String, Object> map) {
+        map.forEach(
+                (key, value) -> {
+                    if (value instanceof String) {
+                        map.put(key, (String.valueOf(value).toLowerCase(Locale.ROOT)));
+                    } else if (value instanceof Map) {
+                        toLowerCase((Map) value);
+                    }
+                }
+        );
     }
 
     /**
@@ -57,12 +77,12 @@ public class YamlTools implements ApplicationContextAware {
      *
      * @return map
      */
-    public static HashMap<String,String> getFile(){
+    public static HashMap<String, Object> getFile() {
         String baseDirectory = "/Users/zhihuangzhang/IdeaProjects/excel/src/main/java/com/grapefruit/excel/file";
 
         List<File> yamlFile = getYamlFile(baseDirectory);
 
-        HashMap<String,String> keyValue = new HashMap<>();
+        HashMap<String, Object> keyValue = new HashMap<>();
         yamlFile.stream()
                 .filter(file -> file.getName().endsWith(".yaml"))
                 .forEach(
@@ -78,7 +98,7 @@ public class YamlTools implements ApplicationContextAware {
      * @param directoryPath 文件夹
      * @return List<File>
      */
-    public static List<File> getYamlFile(String directoryPath){
+    public static List<File> getYamlFile(String directoryPath) {
         File baseFile = new File(directoryPath);
         return Arrays.asList(Objects.requireNonNull(baseFile.listFiles()));
     }
@@ -89,7 +109,7 @@ public class YamlTools implements ApplicationContextAware {
      * @param fileName yaml文件的绝对路径
      * @return Map
      */
-    private static HashMap<String,String> getSourceFromYaml(String fileName) {
+    private static HashMap<String, Object> getSourceFromYaml(String fileName) {
         Yaml yaml = new Yaml();
         FileInputStream fis = null;
         try {
@@ -98,5 +118,10 @@ public class YamlTools implements ApplicationContextAware {
             e.printStackTrace();
         }
         return yaml.loadAs(fis, HashMap.class);
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        context = applicationContext;
     }
 }
