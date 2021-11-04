@@ -1,8 +1,14 @@
 package com.grapefruit.excel;
 
 import com.grapefruit.excel.yaml.YamlTools;
+import org.apache.poi.common.usermodel.HyperlinkType;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Hyperlink;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -30,63 +36,112 @@ import java.util.Map;
 public class Excel implements ApplicationContextAware {
     @Autowired
     private Environment env;
-    private ApplicationContext context;
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        context = applicationContext;
-        getProperty();
-    }
-
-    // https://www.cnblogs.com/LiZhiW/p/4313789.html?utm_source=tuicool&utm_medium=referral
-    // 网友博客 https://blog.csdn.net/fukaiit/article/details/82724545
 
     public static void main(String[] args) throws IOException {
         XSSFWorkbook workbook = new XSSFWorkbook();
 
-        XSSFSheet sheet = workbook.createSheet("柚子苦瓜茶-2021-04-18");
+        XSSFSheet sheet = workbook.createSheet("柚子苦瓜茶-2021-04-29");
 
         List<CellRangeAddress> mergedRegions = sheet.getMergedRegions();
 
-        //String fileName = "/Users/zhihuangzhang/IdeaProjects/excel/src/main/java/com/grapefruit/excel/file/properties.yaml";
+        //String fileName = "/Users/user/hahaha/excel/src/main/java/com/grapefruit/excel/file
+        // /properties.yaml";
         //HashMap map = YamlTools.getSource(fileName);
-        HashMap map = YamlTools.getFile();
+        HashMap<String, Object> map = YamlTools.getFile();
         // 行
         int r = map.size();
         // 列
         int c = 2;
         ArrayList<Map.Entry> list = new ArrayList<>(map.entrySet());
 
-        for (int i = 0;i<r ;i++){
+        Hyperlink link = getSuperLink(workbook);
+        for (int i = 0; i < r; i++) {
             // 创建行
             XSSFRow row = sheet.createRow(i);
             // 创建列
-            createCell(row,c,list.get(i));
+            createCell( workbook,row, link, c, list.get(i));
         }
 
-        OutputStream os = new FileOutputStream("/Users/zhihuangzhang/Desktop/excel.xlsx");
+        OutputStream os = new FileOutputStream("/Users/user/ddd/excel2021011044.xlsx");
         workbook.write(os);
         os.flush();
         os.close();
         workbook.close();
     }
 
-    private void getProperty(){
-        System.out.println(env.getProperty("name"));
-    }
+    // https://www.cnblogs.com/LiZhiW/p/4313789.html?utm_source=tuicool&utm_medium=referral
+    // 网友博客 https://blog.csdn.net/fukaiit/article/details/82724545
 
     /**
      * 在给定的行创建列(单元格)
-     * @param row 行
-     * @param count 该行的列数
+     *
+     * @param row   row
+     * @param link  link
+     * @param count count
+     * @param entry entry
      */
-    private static void createCell(XSSFRow row, int count, Map.Entry entry){
-        for (int i = 0;i<count ;i++){
-            // 创建列
+    private static void createCell(XSSFWorkbook workbook,XSSFRow row, Hyperlink link, int count, Map.Entry entry) {
+        Font font=workbook.createFont();
+        font.setUnderline((byte)1);
+
+        for (int i = 0; i < count; i++) {
+            // 1 创建列
             XSSFCell c1 = row.createCell(0);
-            c1.setCellValue(String.valueOf(entry.getKey()));
+
+            // 2 创建单元格
+            String value = String.valueOf(entry.getKey());
+            // 3 设置单元格内容
+            c1.setCellValue(value);
+
+            // 4.1 定义超链接
+            Hyperlink link1 = getSuperLink(workbook);
+            // 4.2 设置超链接地址
+            link1.setAddress("http://www.baidu.com/" + i);
+            // 4.3 单元格设置超链接
+            c1.setHyperlink(link1);
+
+            XSSFRichTextString richString = new XSSFRichTextString(value);
+            // 该font应用于那些位置的字符
+            richString.applyFont(1, value.length(), font);
+
+            // 5.1 给样式设置字体
+            CellStyle style=workbook.createCellStyle();
+            style.setFont(font);
+
+            // 5.2 单元格设置样式
+            c1.setCellStyle(style);
+
+            //========================================================
             XSSFCell c2 = row.createCell(1);
             c2.setCellValue(String.valueOf(entry.getValue()));
+
+            Hyperlink link2 = getSuperLink(workbook);
+            link2.setAddress("http://www.baidu.com/" + i);
+            c2.setHyperlink(link2);
         }
+    }
+
+    /**
+     * 设置单元格内容的超链接
+     *
+     * @param workbook workbook
+     * @return Hyperlink
+     */
+    public static Hyperlink getSuperLink(XSSFWorkbook workbook) {
+        CreationHelper creationHelper = workbook.getCreationHelper();
+        Hyperlink link = creationHelper.createHyperlink(HyperlinkType.FILE);
+        String url = "http://www.baidu.com";
+        link.setAddress(url);
+        //cell.setHyperlink(link);
+        return link;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        getProperty();
+    }
+
+    private void getProperty() {
+        System.out.println(env.getProperty("name"));
     }
 }
