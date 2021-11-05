@@ -34,7 +34,6 @@ import java.util.Map;
  */
 @Component
 public class Excel implements ApplicationContextAware {
-    private static final int i = 0;
     @Autowired
     private Environment env;
 
@@ -60,7 +59,7 @@ public class Excel implements ApplicationContextAware {
             // 创建行
             XSSFRow row = sheet.createRow(i);
             // 创建列
-            createCell(workbook, row, link, c, list.get(i));
+            createCell( workbook,row, link, c, list.get(i));
         }
 
         OutputStream os = new FileOutputStream("/Users/user/ddd/excel2021011044.xlsx");
@@ -81,9 +80,9 @@ public class Excel implements ApplicationContextAware {
      * @param count count
      * @param entry entry
      */
-    private static void createCell(XSSFWorkbook workbook, XSSFRow row, Hyperlink link, int count, Map.Entry entry) {
-        Font font = workbook.createFont();
-        font.setUnderline((byte) 1);
+    private static void createCell(XSSFWorkbook workbook,XSSFRow row, Hyperlink link, int count, Map.Entry entry) {
+        Font font=workbook.createFont();
+        font.setUnderline((byte)1);
 
         for (int i = 0; i < count; i++) {
             // 1 创建列
@@ -106,7 +105,7 @@ public class Excel implements ApplicationContextAware {
             richString.applyFont(1, value.length(), font);
 
             // 5.1 给样式设置字体
-            CellStyle style = workbook.createCellStyle();
+            CellStyle style=workbook.createCellStyle();
             style.setFont(font);
 
             // 5.2 单元格设置样式
