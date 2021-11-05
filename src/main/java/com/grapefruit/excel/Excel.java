@@ -39,6 +39,8 @@ public class Excel implements ApplicationContextAware {
 
     int i = 1;
 
+    int j = 2;
+
     public static void main(String[] args) throws IOException {
         XSSFWorkbook workbook = new XSSFWorkbook();
 
