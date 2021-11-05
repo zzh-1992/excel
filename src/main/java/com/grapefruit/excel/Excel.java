@@ -37,6 +37,8 @@ public class Excel implements ApplicationContextAware {
     @Autowired
     private Environment env;
 
+    int i = 1;
+
     public static void main(String[] args) throws IOException {
         XSSFWorkbook workbook = new XSSFWorkbook();
 
