@@ -6,9 +6,9 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Hyperlink;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -60,15 +60,14 @@ public class Excel implements ApplicationContextAware {
         int c = 2;
         ArrayList<Map.Entry> list = new ArrayList<>(map.entrySet());
 
-        Hyperlink link = getSuperLink(workbook);
         for (int i = 0; i < r; i++) {
             // 创建行
             XSSFRow row = sheet.createRow(i);
             // 创建列
-            createCell( workbook,row, link, c, list.get(i));
+            createCell( workbook,row, c, list.get(i));
         }
 
-        OutputStream os = new FileOutputStream("/Users/user/ddd/excel2021011044.xlsx");
+        OutputStream os = new FileOutputStream(Path.EXCEL_PATH);
         workbook.write(os);
         os.flush();
         os.close();
@@ -82,13 +81,13 @@ public class Excel implements ApplicationContextAware {
      * 在给定的行创建列(单元格)
      *
      * @param row   row
-     * @param link  link
      * @param count count
      * @param entry entry
      */
-    private static void createCell(XSSFWorkbook workbook,XSSFRow row, Hyperlink link, int count, Map.Entry entry) {
+    private static void createCell(XSSFWorkbook workbook,XSSFRow row, int count, Map.Entry entry) {
         Font font=workbook.createFont();
         font.setUnderline((byte)1);
+        font.setColor(IndexedColors.BLUE.getIndex());
 
         for (int i = 0; i < count; i++) {
             // 1 创建列
@@ -100,15 +99,11 @@ public class Excel implements ApplicationContextAware {
             c1.setCellValue(value);
 
             // 4.1 定义超链接
-            Hyperlink link1 = getSuperLink(workbook);
+            Hyperlink link = workbook.getCreationHelper().createHyperlink(HyperlinkType.URL);
             // 4.2 设置超链接地址
-            link1.setAddress("http://www.baidu.com/" + i);
+            link.setAddress("http://www.baidu.com/" + i);
             // 4.3 单元格设置超链接
-            c1.setHyperlink(link1);
-
-            XSSFRichTextString richString = new XSSFRichTextString(value);
-            // 该font应用于那些位置的字符
-            richString.applyFont(1, value.length(), font);
+            c1.setHyperlink(link);
 
             // 5.1 给样式设置字体
             CellStyle style=workbook.createCellStyle();
@@ -135,11 +130,8 @@ public class Excel implements ApplicationContextAware {
      */
     public static Hyperlink getSuperLink(XSSFWorkbook workbook) {
         CreationHelper creationHelper = workbook.getCreationHelper();
-        Hyperlink link = creationHelper.createHyperlink(HyperlinkType.FILE);
-        String url = "http://www.baidu.com";
-        link.setAddress(url);
         //cell.setHyperlink(link);
-        return link;
+        return creationHelper.createHyperlink(HyperlinkType.FILE);
     }
 
     @Override
