@@ -29,11 +29,19 @@ public class DropDownLists {
     @SneakyThrows
     public static void main(String[] args) {
         Workbook workbook = new XSSFWorkbook();  // or new HSSFWorkbook
+
+        // 创建sheet
         Sheet sheet = workbook.createSheet("Data Validation");
+
         DataValidationHelper dvHelper = sheet.getDataValidationHelper();
+
+        // 下拉选项里的可选值
         DataValidationConstraint dvConstraint = dvHelper.createExplicitListConstraint(
                 new String[]{"13", "23", "33"});
+
+        // 需要使用下拉选项的位置
         CellRangeAddressList addressList = new CellRangeAddressList(0, 5, 0, 0);
+
         DataValidation validation = dvHelper.createValidation(
                 dvConstraint, addressList);
         // Note the check on the actual type of the DataValidation object.
@@ -51,6 +59,7 @@ public class DropDownLists {
         }
         sheet.addValidationData(validation);
 
+        // 定义输出的excel文件名
         String file = "DropDownLists.xls";
         if (workbook instanceof XSSFWorkbook) file += "x";
         try (OutputStream fileOut = new FileOutputStream(file)) {
