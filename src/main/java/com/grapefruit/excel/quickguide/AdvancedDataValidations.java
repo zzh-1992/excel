@@ -9,13 +9,12 @@ import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.usermodel.XSSFDataValidation;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 二级下拉框
@@ -28,57 +27,47 @@ import java.util.List;
  */
 public class AdvancedDataValidations {
 
-    public static void main(String[] args) throws FileNotFoundException {
-        Workbook workbook = new XSSFWorkbook();  // or new HSSFWorkbook
+    public static void main(String[] args) throws IOException {
+
+        XSSFWorkbook workbook = new XSSFWorkbook();
 
         // 创建sheet
         Sheet sheet = workbook.createSheet("Data Validation");
 
+        // 预制数据
         Sheet dbSheet = workbook.createSheet("db");
-        List<String> gd = Arrays.asList("gz", "mz", "sz");
-        List<String> jx = Arrays.asList("jj", "gz", "nc");
-        List<String> fj = Arrays.asList("ly", "fz", "xm");
+        Map<String, List<String>> map = new HashMap<>();
+        List<String> gd = Arrays.asList("广州", "梅州", "深圳");
+        List<String> jx = Arrays.asList("九江", "赣州", "南昌");
+        List<String> fj = Arrays.asList("龙岩", "福州", "厦门");
+        map.put("广东", gd);
+        map.put("江西", jx);
+        map.put("福建", fj);
 
-        Row row0 = dbSheet.createRow(0);
-        Row row1 = dbSheet.createRow(1);
-        Row row2 = dbSheet.createRow(2);
 
-        row0.createCell(0).setCellValue(gd.get(0));
-        row1.createCell(0).setCellValue(gd.get(1));
-        row2.createCell(0).setCellValue(gd.get(2));
+        // 起始行
+        AtomicInteger rowIndex = new AtomicInteger(1);
+        map.forEach((key, strList) -> {
+            Row row = dbSheet.createRow(rowIndex.get() - 1);
+            row.createCell(0).setCellValue(key);
+            for (int i = 1; i <= gd.size(); i++) {
+                row.createCell(i).setCellValue(strList.get(i - 1));
+            }
 
-        // 构造名称管理器
-        String range = buildRange(0, 1, 3);
-        Name gzName = workbook.createName();
-        gzName.setNameName("gz");
-        String formula = "db" + "!" + range;
-        gzName.setRefersToFormula(formula);
-
-        row0.createCell(1).setCellValue(jx.get(0));
-        row1.createCell(1).setCellValue(jx.get(1));
-        row2.createCell(1).setCellValue(jx.get(2));
-
-        // 构造名称管理器
-        range = buildRange(1, 1, 3);
-        Name jxName = workbook.createName();
-        jxName.setNameName("jx");
-        formula = "db" + "!" + range;
-        jxName.setRefersToFormula(formula);
-
-        row0.createCell(2).setCellValue(fj.get(0));
-        row1.createCell(2).setCellValue(fj.get(1));
-        row2.createCell(2).setCellValue(fj.get(2));
-        // 构造名称管理器
-        range = buildRange(2, 1, 3);
-        Name fjName = workbook.createName();
-        fjName.setNameName("fj");
-        formula = "db" + "!" + range;
-        fjName.setRefersToFormula(formula);
+            // 构造名称管理器
+            String range = buildRange(rowIndex, strList.size());
+            Name gzName = workbook.createName();
+            gzName.setNameName(key);
+            String formula = "db" + "!" + range;
+            gzName.setRefersToFormula(formula);
+            rowIndex.getAndIncrement();
+        });
 
         DataValidationHelper dvHelper = sheet.getDataValidationHelper();
 
         // 下拉选项里的可选值
-        String[] china = new String[]{"gz", "jx", "fj"};
+        String[] china = map.keySet().toArray(new String[0]);
+
         DataValidationConstraint dvConstraint = dvHelper.createExplicitListConstraint(china);
 
         // 一级下拉
@@ -114,23 +103,23 @@ public class AdvancedDataValidations {
         }
 
         // 定义输出的excel文件名
-        String file = "DropDownLists.xlsx";
+        String file = "AdvancedDataValidations.xlsx";
 
         try (OutputStream fileOut = Files.newOutputStream(Paths.get(file))) {
             workbook.write(fileOut);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        workbook.close();
     }
 
-    private static String buildRange(int offset, int startRow, int rowCount) {
-        char start = (char) ('A' + offset);
-        return "$" + start + "$" + startRow + ":$" + start + "$" + (startRow + rowCount - 1);
+    private static String buildRange(AtomicInteger index, int size) {
+        int rowPosition = index.get();
+        char offest = (char) ('A' + size);
+        return "$" + "B" + "$" + rowPosition + ":$" + offest + "$" + rowPosition;
     }
 
     private static String buildFormulaString(String offset, int rowNum) {
-        // return "INDIRECT($" + offset + (rowNum) + ")";
-        //return "INDIRECT($" + offset + "$" +  (rowNum) + ")";
         return "INDIRECT($" + offset + (rowNum) + ")";
     }
 }
